@@ -34,20 +34,25 @@ public_users.get('/author/:author',function (req, res) {
     }
   });
 
-  if (Object.keys(foundBooks) !== 0)
-  {
-    res.send(foundBooks)
-  }
-  else
-  {
-    res.send("Book not found for author " + author);
-  }
+  res.send(foundBooks)
+
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const title = req.params.title;
+    let foundBooks = {};
+  
+    Object.keys(books).forEach(key => {
+      const book = books[key];
+      if(book.title === title)
+      {
+          foundBooks[book.author] = book;
+      }
+    });
+  
+    res.send(foundBooks)
+
 });
 
 //  Get book review
