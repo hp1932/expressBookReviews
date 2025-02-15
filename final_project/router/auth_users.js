@@ -6,11 +6,15 @@ const regd_users = express.Router();
 let users = [];
 
 const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
-}
+    if (users.length === 0) {
+        return true;
+    }
+
+    return users.some((user) => user.name !== username);
+};
 
 
-const authenticatedUser = (username,password)=>{ //returns boolean
+const authenticatedUser = (username, password) => {
     // Filter the users array for any user with the same username and password
     let validusers = users.filter((user) => {
         return (user.username === username && user.password === password);
@@ -21,11 +25,11 @@ const authenticatedUser = (username,password)=>{ //returns boolean
     } else {
         return false;
     }
-}
+};
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
-      const username = req.body.username;
+    const username = req.body.username;
     const password = req.body.password;
 
     // Check if username or password is missing
@@ -52,8 +56,19 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const isbn = req.isbn;
+    const username = req.session.authorization.username;
+    const review = req.body.review;
+    let book = books[isbn];
+
+    if(book)
+    {
+        book.reviews[username] = review;
+    }
+    else
+    {
+        res.send("Book does not exist");
+    }
 });
 
 module.exports.authenticated = regd_users;
