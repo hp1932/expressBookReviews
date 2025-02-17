@@ -64,7 +64,6 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         let review = req.query.review;
         let reviewer = req.session.authorization['username'];
         if (review) {
-
             filtered_book['reviews'][reviewer] = review;
             books[isbn] = filtered_book;
         }
@@ -76,12 +75,23 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 });
 
 regd_users.delete("/auth/review/:isbn", (req, res) => {
-    let reviewer = req.session.authorization['username'];
+    let username = req.session.authorization['username'];
+    let isbn = req.params.isbn;
     let filtered_book = books[isbn];
+    
     if (filtered_book) {
-        let newReviews = filtered_book['reviews'].filter((review) => {review.username !== reviewer});
-        books[isbn] = filtered_book;
-    }
+        if(filtered_book.reviews[username])
+        {
+            delete filtered_book.reviews[username];
+            res.send(`The review for the book with ISBN ${isbn} has been removed!`);
+        }
+        else
+        {
+            res.send(`No review found for user ${username}`)
+        }
+    }else {
+        res.send("Unable to find this ISBN!");
+     }
 
 });
 
