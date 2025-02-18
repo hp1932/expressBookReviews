@@ -62,40 +62,51 @@ function getBookByISBNPromise(isbn)
 public_users.get('/isbn/:isbn',function (req, res) {
     getBookByISBNPromise(req.params.isbn).then((book) => res.send(book));
  });
+
+ function getBookByAuthorPromise(author)
+ {
+    return new Promise((resolve, reject) => {
+        let foundBooks = {};
+
+        Object.keys(books).forEach(key => {
+            const book = books[key];
+            if(book.author === author)
+            {
+                foundBooks[book.title] = book;
+            }
+        });
+
+        resolve(foundBooks);
+    });
+ }
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
-  let foundBooks = {};
-
-  Object.keys(books).forEach(key => {
-    const book = books[key];
-    if(book.author === author)
-    {
-        foundBooks[book.title] = book;
-    }
-  });
-
-  res.send(foundBooks)
-
+public_users.get('/author/:author',function (req, res) 
+{
+  getBookByAuthorPromise(req.params.author).then((bookList) => res.send(bookList));
 });
 
+function getBooksByTitlePromise(title) 
+{
+    return new Promise((resolve, reject) => {
+        let foundBooks = {};
+
+        Object.keys(books).forEach(key => {
+        const book = books[key];
+        if(book.title === title)
+        {
+            foundBooks[book.author] = book;
+        }
+        });
+
+        resolve(foundBooks);
+    });
+}
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-    const title = req.params.title;
-    let foundBooks = {};
-  
-    Object.keys(books).forEach(key => {
-      const book = books[key];
-      if(book.title === title)
-      {
-          foundBooks[book.author] = book;
-      }
-    });
-  
-    res.send(foundBooks)
-
+public_users.get('/title/:title',function (req, res) 
+{
+    getBooksByTitlePromise(req.params.title).then((foundBooks) => res.send(foundBooks));
 });
 
 //  Get book review
