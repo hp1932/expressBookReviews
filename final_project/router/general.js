@@ -43,15 +43,24 @@ public_users.post("/register", (req,res) => {
     return res.status(404).json({message: "Unable to register user."});
 });
 
+function bookListPromise()
+{
+    return new Promise((resolve, reject) => {resolve(books)});
+}
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  return res.send(JSON.stringify(books, null, 4));
+    bookListPromise().then((bookList) => res.send(JSON.stringify(bookList)));
 });
+
+function getBookByISBNPromise(isbn)
+{
+    return new Promise((resolve, reject) => {resolve(books[isbn])});
+}
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-    const isbn = req.params.isbn;
-    res.send(books[isbn]);
+    getBookByISBNPromise(req.params.isbn).then((book) => res.send(book));
  });
   
 // Get book details based on author
@@ -70,6 +79,7 @@ public_users.get('/author/:author',function (req, res) {
   res.send(foundBooks)
 
 });
+
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
